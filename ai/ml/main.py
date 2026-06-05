@@ -1,16 +1,16 @@
-import joblib
-import pandas as pd
+from fastapi import FastAPI
+from routers.prediction import router as prediction_router
 
-model = joblib.load("models/mood_predictor.pkl")
+app = FastAPI()
 
-sample = pd.DataFrame({
-    "sleep_hours": [6.2],
-    "screen_time": [24.6], 
-    "stress_level": [1.331], 
-    "exercise_minutes": [25.0], 
-    "diet_quality": [1]
-})
+@app.get("/api/v1/health")
+def health_check():
+    return {
+        "status": "OK",
+        "name": "Mood and energy prediction service"
+    }
 
-if __name__ == "__main__":
-    prediction = model.predict(sample)
-    print(f"Predicted mood score: {prediction[0]}")
+app.include_router(
+    prediction_router,
+    prefix="/api/v1/predict"
+)
